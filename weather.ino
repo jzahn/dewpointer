@@ -36,8 +36,10 @@ double dewPointFast(const double celsius, const double humidity)
 }
 
 // quick dewpoint approximation (best at high humidity)
-// Lawrence, Mark G., 2005: The relationship between relative humidity and the dewpoint temperature in moist air: 
-// A simple conversion and applications. Bull. Amer. Meteor. Soc., 86, 225-233. doi: http;//dx.doi.org/10.1175/BAMS-86-2-225
+// Lawrence, Mark G., 2005: The relationship between relative humidity and the 
+//  dewpoint temperature in moist air: 
+// A simple conversion and applications. Bull. Amer. Meteor. Soc., 86, 225-233. 
+// doi: http;//dx.doi.org/10.1175/BAMS-86-2-225
 
 double dewPointSimple(const double celcius, const double humidity)
 {
