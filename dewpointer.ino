@@ -6,22 +6,10 @@
 #define DHTTYPE DHT22
 
 DHT dht(DHTPIN, DHTTYPE);
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
-// select the pins used on the LCD panel
-//LiquidCrystal lcd(8, 9, 4, 5, 6, 7); // osepp
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2); // standard
-
-// define some values used by the panel and buttons
-int lcd_key     = 0;
-int adc_key_in  = 0;
-#define btnRIGHT  0
-#define btnUP     1
-#define btnDOWN   2
-#define btnLEFT   3
-#define btnSELECT 4
-#define btnNONE   5
-
-int display_mode = 2;
+int displayMode = 2;
+boolean displayCelcius = false;
 
 byte customCharTorn[8] = {
   0b11111,
@@ -96,80 +84,49 @@ void loop()
   double tempF = farenheight(tempC);
   double dewpC = dewPoint(tempC, humidity);
   double dewpF = farenheight(dewpC);
-  double temp_dp_deltaF = tempF - dewpF;
-  getInput();
-  doDisplay(tempF, dewpF, humidity, temp_dp_deltaF);
+  double deprC = tempC - dewpC;
+  double deprF = tempF - dewpF;
+  
+  processInput();
+  
+  if (displayCelcius)
+    printDisplay(tempC, dewpC, humidity, deprC);
+  else
+    printDisplay(tempF, dewpF, humidity, deprF);
+  
   delay(2000);
 }
 
-void getInput()
+void processInput()
 {
-  lcd_key = read_lcd_buttons();
-
-  switch (lcd_key)
-  {
-    case btnUP:
-      display_mode = 0;
-      break;
-
-    case btnDOWN:
-      display_mode = 1;
-      break;
-
-    case btnRIGHT:
-      display_mode = 3;
-      break;
-
-    case btnLEFT:
-      display_mode = 2;
-      break;
-
-    case btnSELECT:
-      display_mode = 0;
-      break;
-  }
+  
 }
 
-int read_lcd_buttons()
+void printDisplay(const double temp, const double dewp, const double humidity, const double deprF)
 {
-  adc_key_in = analogRead(0);      // read the value from the sensor
-  // my buttons when read are centered at these valies: 0, 144, 329, 504, 741
-  // we add approx 50 to those values and check to see if we are close
-  if (adc_key_in > 1000) return btnNONE; // We make this the 1st option for speed reasons
-  if (adc_key_in < 50)   return btnRIGHT;
-  if (adc_key_in < 195)  return btnUP;
-  if (adc_key_in < 380)  return btnSELECT;
-  if (adc_key_in < 555)  return btnDOWN;
-  if (adc_key_in < 790)  return btnLEFT;
-
-  return btnNONE;  // when all others fail, return this...
-}
-
-void doDisplay(const double tempF, const double dewpF, const double humidity, const double temp_dp_deltaF)
-{
-  if (display_mode == 0)
+  if (displayMode == 0)
   {
     lcd.clear();
-    display_mode_0(tempF, dewpF);
+    printDisplayMode0(temp, dewp);
   }
-  else if (display_mode == 1)
+  else if (displayMode == 1)
   {
     lcd.clear();
-    display_mode_1(tempF, humidity);
+    printDisplayMode1(temp, humidity);
   }
-  else if (display_mode == 2)
+  else if (displayMode == 2)
   {
     lcd.clear();
-    display_mode_2(tempF, dewpF, temp_dp_deltaF);
+    printDisplayMode2(temp, dewp, deprF);
   }
   else
   {
     lcd.clear();
-    display_mode_3(tempF, dewpF, humidity, temp_dp_deltaF);
+    printDisplayMode3(temp, dewp, humidity, deprF);
   }
 }
 
-void display_mode_0(const double tempF, const double dewpF)
+void printDisplayMode0(const double temp, const double dewp)
 {
   lcd.setCursor(0, 0);
   lcd.print("TEMP");
@@ -177,12 +134,12 @@ void display_mode_0(const double tempF, const double dewpF)
   lcd.print("DEWP");
 
   lcd.setCursor(0, 1);
-  lcd.print(tempF);
+  lcd.print(temp);
   lcd.setCursor(9, 1);
-  lcd.print(dewpF);
+  lcd.print(dewp);
 }
 
-void display_mode_1(const double tempF, const double humidity)
+void printDisplayMode1(const double temp, const double humidity)
 {
   lcd.setCursor(0, 0);
   lcd.print("TEMP");
@@ -190,12 +147,12 @@ void display_mode_1(const double tempF, const double humidity)
   lcd.print("HUMI");
 
   lcd.setCursor(0, 1);
-  lcd.print(tempF);
+  lcd.print(temp);
   lcd.setCursor(9, 1);
   lcd.print(humidity);
 }
 
-void display_mode_2(const double tempF, const double dewpF,  const double temp_dp_deltaF)
+void printDisplayMode2(const double temp, const double dewp,  const double deprF)
 {
   lcd.setCursor(0, 0);
   lcd.print("TEMP");
@@ -205,26 +162,26 @@ void display_mode_2(const double tempF, const double dewpF,  const double temp_d
   lcd.write((uint8_t)4);
   lcd.setCursor(12, 0);
   //lcd.print("DEPR");
-  printMoneyDisplay(temp_dp_deltaF);
+  printMoneyDisplay(deprF);
 
   lcd.setCursor(0, 1);
-  lcd.print(tempF);
+  lcd.print(temp);
   lcd.setCursor(6, 1);
-  lcd.print(dewpF);
+  lcd.print(dewp);
   lcd.setCursor(12, 1);
-  lcd.print(temp_dp_deltaF);
+  lcd.print(deprF);
 }
 
-void display_mode_3(const double tempF, const double dewpF, const double humidity, const double temp_dp_deltaF) {
+void printDisplayMode3(const double temp, const double dewp, const double humidity, const double deprF) {
   lcd.setCursor(0, 0);
   lcd.print("T");
   lcd.setCursor(2, 0);
-  lcd.print(tempF);
+  lcd.print(temp);
 
   lcd.setCursor(9, 0);
   lcd.print("D");
   lcd.setCursor(11, 0);
-  lcd.print(dewpF);
+  lcd.print(dewp);
 
   lcd.setCursor(0, 1);
   lcd.print("H");
@@ -234,28 +191,51 @@ void display_mode_3(const double tempF, const double dewpF, const double humidit
   lcd.setCursor(9, 1);
   lcd.print("d");
   lcd.setCursor(11, 1);
-  lcd.print(temp_dp_deltaF);
+  lcd.print(deprF);
 }
 
-void printMoneyDisplay(const double temp_dp_deltaF)
+void printMoneyDisplay(const double deprF)
 {
-  if (temp_dp_deltaF < 5) {
+  if (deprF < 5) {
     lcd.write((uint8_t)0);
     lcd.write((uint8_t)0);
     lcd.write((uint8_t)0);
     lcd.write((uint8_t)0);
   }
-  else if (temp_dp_deltaF < 10) {
+  else if (deprF < 10) {
     lcd.write((uint8_t)0);
     lcd.write((uint8_t)0);
     lcd.write((uint8_t)0);
   }
-  else if (temp_dp_deltaF < 20) {
+  else if (deprF < 20) {
     lcd.write((uint8_t)0);
     lcd.write((uint8_t)0);
   }
   else {
     lcd.write((uint8_t)0);
   }
+}
+
+double dewPoint(const double celsius, const double humidity)
+{
+  // (1) Saturation Vapor Pressure = ESGG(T)
+  double ratio = 373.15 / (273.15 + celsius);
+  double rhs = -7.90298 * (ratio - 1);
+  rhs += 5.02808 * log10(ratio);
+  rhs += -1.3816e-7 * (pow(10, (11.344 * (1 - 1/ratio ))) - 1) ;
+  rhs += 8.1328e-3 * (pow(10, (-3.49149 * (ratio - 1))) - 1) ;
+  rhs += log10(1013.246);
+
+  // factor -3 is to adjust units - Vapor Pressure SVP * humidity
+  double VP = pow(10, rhs - 3) * humidity;
+
+  // (2) DEWPOINT = F(Vapor Pressure)
+  double T = log(VP/0.61078);   // temp var
+  return (241.88 * T) / (17.558 - T);
+}
+
+double farenheight(const double celcius)
+{
+  return celcius * 1.8 + 32;
 }
 
