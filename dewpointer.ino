@@ -199,13 +199,13 @@ void display_mode_2(const double tempF, const double dewpF,  const double temp_d
 {
   lcd.setCursor(0, 0);
   lcd.print("TEMP");
-  //lcd.write((uint8_t)2);
+  lcd.write((uint8_t)1);
   lcd.setCursor(6, 0);
   lcd.print("DEWP");
-  //lcd.write((uint8_t)3);
+  lcd.write((uint8_t)4);
   lcd.setCursor(12, 0);
-  lcd.print("DEPR");
-  //printMoneyDisplay(temp_dp_deltaF);
+  //lcd.print("DEPR");
+  printMoneyDisplay(temp_dp_deltaF);
 
   lcd.setCursor(0, 1);
   lcd.print(tempF);
