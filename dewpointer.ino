@@ -78,9 +78,9 @@ void setup()
 
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("dewpointer v0.1");
+  lcd.print("dewpointer  v0.1");
   lcd.setCursor(0, 1);
-  lcd.print("2017 jason zahn");
+  lcd.print("2017  jason zahn");
   
   delay(2000);
 }
