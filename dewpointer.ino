@@ -110,7 +110,7 @@ void processInput()
   
 }
 
-void printDisplay(const double temp, const double dewp, const double humidity, const double deprF)
+void printDisplay(const double temp, const double dewp, const double humidity, const double depr)
 {
   if (displayMode == 0)
   {
@@ -125,12 +125,12 @@ void printDisplay(const double temp, const double dewp, const double humidity, c
   else if (displayMode == 2)
   {
     lcd.clear();
-    printDisplayMode2(temp, dewp, deprF);
+    printDisplayMode2(temp, dewp, depr);
   }
   else
   {
     lcd.clear();
-    printDisplayMode3(temp, dewp, humidity, deprF);
+    printDisplayMode3(temp, dewp, humidity, depr);
   }
 }
 
@@ -160,7 +160,7 @@ void printDisplayMode1(const double temp, const double humidity)
   lcd.print(humidity);
 }
 
-void printDisplayMode2(const double temp, const double dewp,  const double deprF)
+void printDisplayMode2(const double temp, const double dewp,  const double depr)
 {
   lcd.setCursor(0, 0);
   lcd.print("TEMP");
@@ -170,17 +170,17 @@ void printDisplayMode2(const double temp, const double dewp,  const double deprF
   lcd.write((uint8_t)4);
   lcd.setCursor(12, 0);
   //lcd.print("DEPR");
-  printMoneyDisplay(deprF);
+  printMoneyDisplay(depr);
 
   lcd.setCursor(0, 1);
   lcd.print(temp);
   lcd.setCursor(6, 1);
   lcd.print(dewp);
   lcd.setCursor(13, 1);
-  lcd.print(dblToInt(deprF));
+  lcd.print(dblToInt(depr));
 }
 
-void printDisplayMode3(const double temp, const double dewp, const double humidity, const double deprF) {
+void printDisplayMode3(const double temp, const double dewp, const double humidity, const double depr) {
   lcd.setCursor(0, 0);
   lcd.print("T");
   lcd.setCursor(2, 0);
@@ -199,23 +199,23 @@ void printDisplayMode3(const double temp, const double dewp, const double humidi
   lcd.setCursor(9, 1);
   lcd.print("d");
   lcd.setCursor(11, 1);
-  lcd.print(deprF);
+  lcd.print(depr);
 }
 
-void printMoneyDisplay(const double deprF)
+void printMoneyDisplay(const double depr)
 {
-  if (deprF < 5) {
+  if (depr < 5) {
     lcd.write((uint8_t)0);
     lcd.write((uint8_t)0);
     lcd.write((uint8_t)0);
     lcd.write((uint8_t)0);
   }
-  else if (deprF < 10) {
+  else if (depr < 10) {
     lcd.write((uint8_t)0);
     lcd.write((uint8_t)0);
     lcd.write((uint8_t)0);
   }
-  else if (deprF < 20) {
+  else if (depr < 20) {
     lcd.write((uint8_t)0);
     lcd.write((uint8_t)0);
   }
