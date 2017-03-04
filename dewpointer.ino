@@ -76,10 +76,12 @@ void setup()
   lcd.createChar(4, customCharDnDn);
   lcd.begin(16, 2);
 
+  lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("dewpointer v0.1");
   lcd.setCursor(0, 1);
-  lcd.print("jason zahn");
+  lcd.print("2017 jason zahn");
+  
   delay(1000);
 }
 
