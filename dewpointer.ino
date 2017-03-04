@@ -162,14 +162,6 @@ void printDisplayMode1(const double temp, const double humidity)
 
 void printDisplayMode2(const double temp, const double dewp,  const double depr)
 {
-  char tempStr[4];
-  char dewpStr[4];
-  char deprStr[4];
-
-  dtostrf(temp, 4, 1, tempStr);
-  dtostrf(dewp, 4, 1, dewpStr);
-  dtostrf(depr, 4, 1, deprStr);
-  
   lcd.setCursor(0, 0);
   lcd.print("TEMP");
   lcd.write((uint8_t)1);
@@ -181,12 +173,12 @@ void printDisplayMode2(const double temp, const double dewp,  const double depr)
   printMoneyDisplay(depr);
 
   lcd.setCursor(0, 1);
-  lcd.print(tempStr);
+  lcd.print(temp);
   lcd.setCursor(6, 1);
-  lcd.print(dewpStr);
+  lcd.print(dewp);
   lcd.setCursor(12, 1);
-  //lcd.print();
-  lcd.print(deprStr);
+  lcd.print("d ");
+  lcd.print(dblToInt(depr));
 }
 
 void printDisplayMode3(const double temp, const double dewp, const double humidity, const double depr) {
