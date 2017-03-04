@@ -205,6 +205,8 @@ void printDisplayMode3(const double temp, const double dewp, const double humidi
 
 void printMoneyDisplay(const double depr)
 {
+  // TODO flash if < 2
+  // TODO factor in absolute dp
   if (depr < 5) {
     lcd.write((uint8_t)0);
     lcd.write((uint8_t)0);
@@ -216,13 +218,14 @@ void printMoneyDisplay(const double depr)
     lcd.write((uint8_t)0);
     lcd.write((uint8_t)0);
   }
+  else if (depr < 15) {
+    lcd.write((uint8_t)0);
+    lcd.write((uint8_t)0);
+  }
   else if (depr < 20) {
     lcd.write((uint8_t)0);
-    lcd.write((uint8_t)0);
   }
-  else {
-    lcd.write((uint8_t)0);
-  }
+  else {}
 }
 
 double dewPoint(const double celsius, const double humidity)
