@@ -162,6 +162,14 @@ void printDisplayMode1(const double temp, const double humidity)
 
 void printDisplayMode2(const double temp, const double dewp,  const double depr)
 {
+  char tempStr[4];
+  char dewpStr[4];
+  char deprStr[4];
+
+  dtostrf(temp, 4, 1, tempStr);
+  dtostrf(dewp, 4, 1, dewpStr);
+  dtostrf(depr, 4, 1, deprStr);
+  
   lcd.setCursor(0, 0);
   lcd.print("TEMP");
   lcd.write((uint8_t)1);
@@ -173,11 +181,12 @@ void printDisplayMode2(const double temp, const double dewp,  const double depr)
   printMoneyDisplay(depr);
 
   lcd.setCursor(0, 1);
-  lcd.print(temp);
+  lcd.print(tempStr);
   lcd.setCursor(6, 1);
-  lcd.print(dewp);
-  lcd.setCursor(13, 1);
-  lcd.print(dblToInt(depr));
+  lcd.print(dewpStr);
+  lcd.setCursor(12, 1);
+  //lcd.print();
+  lcd.print(deprStr);
 }
 
 void printDisplayMode3(const double temp, const double dewp, const double humidity, const double depr) {
@@ -226,6 +235,7 @@ void printMoneyDisplay(const double depr)
 
 double dewPoint(const double celsius, const double humidity)
 {
+  // NOAA dewpoint calculation /////////////
   // (1) Saturation Vapor Pressure = ESGG(T)
   double ratio = 373.15 / (273.15 + celsius);
   double rhs = -7.90298 * (ratio - 1);
