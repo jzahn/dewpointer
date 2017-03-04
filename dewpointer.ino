@@ -75,6 +75,12 @@ void setup()
   lcd.createChar(3, customCharDn);
   lcd.createChar(4, customCharDnDn);
   lcd.begin(16, 2);
+
+  lcd.setCursor(0, 0);
+  lcd.print("dewpointer v0.1");
+  lcd.setCursor(0, 1);
+  lcd.print("jason zahn");
+  delay(1000);
 }
 
 void loop()
@@ -168,8 +174,8 @@ void printDisplayMode2(const double temp, const double dewp,  const double deprF
   lcd.print(temp);
   lcd.setCursor(6, 1);
   lcd.print(dewp);
-  lcd.setCursor(12, 1);
-  lcd.print(deprF);
+  lcd.setCursor(13, 1);
+  lcd.print(dblToInt(deprF));
 }
 
 void printDisplayMode3(const double temp, const double dewp, const double humidity, const double deprF) {
@@ -237,5 +243,10 @@ double dewPoint(const double celsius, const double humidity)
 double farenheight(const double celcius)
 {
   return celcius * 1.8 + 32;
+}
+
+int dblToInt(const double input)
+{
+  return (int)(input + 0.5f);
 }
 
