@@ -169,7 +169,6 @@ void printDisplayMode2(const double temp, const double dewp,  const double depr)
   lcd.print("DEWP");
   lcd.write((uint8_t)4);
   lcd.setCursor(12, 0);
-  //lcd.print("DEPR");
   printMoneyDisplay(depr);
 
   lcd.setCursor(0, 1);
@@ -217,15 +216,26 @@ void printMoneyDisplay(const double depr)
     lcd.write((uint8_t)0);
     lcd.write((uint8_t)0);
     lcd.write((uint8_t)0);
+    lcd.write("-");
   }
   else if (depr < 15) {
     lcd.write((uint8_t)0);
     lcd.write((uint8_t)0);
+    lcd.write("-");
+    lcd.write("-");
   }
   else if (depr < 20) {
     lcd.write((uint8_t)0);
+    lcd.write("-");
+    lcd.write("-");
+    lcd.write("-");
   }
-  else {}
+  else {
+    lcd.write("-");
+    lcd.write("-");
+    lcd.write("-");
+    lcd.write("-");
+  }
 }
 
 double dewPoint(const double celsius, const double humidity)
