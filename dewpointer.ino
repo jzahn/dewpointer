@@ -1,11 +1,7 @@
-#include <DHT.h>
-#include <DHT_U.h>
+#include <Adafruit_AM2315.h>
 #include <LiquidCrystal.h>
 
-#define DHTPIN 1
-#define DHTTYPE DHT22
-
-DHT dht(DHTPIN, DHTTYPE);
+Adafruit_AM2315 am2315;
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 int displayMode = 2;
@@ -33,7 +29,6 @@ byte customCharUpUp[8] = {
   0b10001
 };
 
-// up
 byte customCharUp[8] = {
   0b00000,
   0b00000,
@@ -69,6 +64,11 @@ byte customCharDnDn[8] = {
 
 void setup()
 {
+  Serial.println("Starting AM2315");
+  if (! am2315.begin()) {
+    Serial.println("Sensor not found, check wiring & pullups!");
+  }
+  
   lcd.createChar(0, customCharTorn);
   lcd.createChar(1, customCharUpUp);
   lcd.createChar(2, customCharUp);
@@ -87,13 +87,17 @@ void setup()
 
 void loop()
 {
-  double humidity = dht.readHumidity();
-  double tempC = dht.readTemperature();
-  double tempF = farenheight(tempC);
-  double dewpC = dewPoint(tempC, humidity);
-  double dewpF = farenheight(dewpC);
-  double deprC = tempC - dewpC;
-  double deprF = tempF - dewpF;
+  float humidity = am2315.readHumidity();
+  delay(500);
+  
+  float tempC = am2315.readTemperature();
+  delay(500);
+  
+  float tempF = farenheight(tempC);
+  float dewpC = dewPoint(tempC, humidity);
+  float dewpF = farenheight(dewpC);
+  float deprC = tempC - dewpC;
+  float deprF = tempF - dewpF;
   
   processInput();
   
@@ -101,8 +105,6 @@ void loop()
     printDisplay(tempC, dewpC, humidity, deprC);
   else
     printDisplay(tempF, dewpF, humidity, deprF);
-  
-  delay(2000);
 }
 
 void processInput()
@@ -110,7 +112,7 @@ void processInput()
   
 }
 
-void printDisplay(const double temp, const double dewp, const double humidity, const double depr)
+void printDisplay(const float temp, const float dewp, const float humidity, const float depr)
 {
   if (displayMode == 0)
   {
@@ -134,7 +136,7 @@ void printDisplay(const double temp, const double dewp, const double humidity, c
   }
 }
 
-void printDisplayMode0(const double temp, const double dewp)
+void printDisplayMode0(const float temp, const float dewp)
 {
   lcd.setCursor(0, 0);
   lcd.print("TEMP");
@@ -147,7 +149,7 @@ void printDisplayMode0(const double temp, const double dewp)
   lcd.print(dewp);
 }
 
-void printDisplayMode1(const double temp, const double humidity)
+void printDisplayMode1(const float temp, const float humidity)
 {
   lcd.setCursor(0, 0);
   lcd.print("TEMP");
@@ -160,7 +162,7 @@ void printDisplayMode1(const double temp, const double humidity)
   lcd.print(humidity);
 }
 
-void printDisplayMode2(const double temp, const double dewp,  const double depr)
+void printDisplayMode2(const float temp, const float dewp,  const float depr)
 {
   lcd.setCursor(0, 0);
   lcd.print("TEMP");
@@ -180,7 +182,7 @@ void printDisplayMode2(const double temp, const double dewp,  const double depr)
   lcd.print(dblToInt(depr));
 }
 
-void printDisplayMode3(const double temp, const double dewp, const double humidity, const double depr) {
+void printDisplayMode3(const float temp, const float dewp, const float humidity, const float depr) {
   lcd.setCursor(0, 0);
   lcd.print("T");
   lcd.setCursor(2, 0);
@@ -202,7 +204,7 @@ void printDisplayMode3(const double temp, const double dewp, const double humidi
   lcd.print(depr);
 }
 
-void printMoneyDisplay(const double depr)
+void printMoneyDisplay(const float depr)
 {
   // TODO flash if < 2
   // TODO factor in absolute dp
@@ -238,31 +240,31 @@ void printMoneyDisplay(const double depr)
   }
 }
 
-double dewPoint(const double celsius, const double humidity)
+float dewPoint(const float celsius, const float humidity)
 {
   // NOAA dewpoint calculation /////////////
   // (1) Saturation Vapor Pressure = ESGG(T)
-  double ratio = 373.15 / (273.15 + celsius);
-  double rhs = -7.90298 * (ratio - 1);
+  float ratio = 373.15 / (273.15 + celsius);
+  float rhs = -7.90298 * (ratio - 1);
   rhs += 5.02808 * log10(ratio);
   rhs += -1.3816e-7 * (pow(10, (11.344 * (1 - 1/ratio ))) - 1) ;
   rhs += 8.1328e-3 * (pow(10, (-3.49149 * (ratio - 1))) - 1) ;
   rhs += log10(1013.246);
 
   // factor -3 is to adjust units - Vapor Pressure SVP * humidity
-  double VP = pow(10, rhs - 3) * humidity;
+  float VP = pow(10, rhs - 3) * humidity;
 
   // (2) DEWPOINT = F(Vapor Pressure)
-  double T = log(VP/0.61078);   // temp var
+  float T = log(VP/0.61078);   // temp var
   return (241.88 * T) / (17.558 - T);
 }
 
-double farenheight(const double celcius)
+float farenheight(const float celcius)
 {
   return celcius * 1.8 + 32;
 }
 
-int dblToInt(const double input)
+int dblToInt(const float input)
 {
   return (int)(input + 0.5f);
 }
