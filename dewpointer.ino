@@ -64,10 +64,7 @@ byte customCharDnDn[8] = {
 
 void setup()
 {
-  Serial.println("Starting AM2315");
-  if (! am2315.begin()) {
-    Serial.println("Sensor not found, check wiring & pullups!");
-  }
+  Serial.begin(9600);
   
   lcd.createChar(0, customCharTorn);
   lcd.createChar(1, customCharUpUp);
@@ -75,6 +72,10 @@ void setup()
   lcd.createChar(3, customCharDn);
   lcd.createChar(4, customCharDnDn);
   lcd.begin(16, 2);
+
+  if (!am2315.begin()) {
+    displayError("AM2315 init");
+  }
 
   lcd.clear();
   lcd.setCursor(0, 0);
@@ -87,10 +88,10 @@ void setup()
 
 void loop()
 {
-  float humidity = am2315.readHumidity();
-  delay(500);
+  Serial.print(".");
   
-  float tempC = am2315.readTemperature();
+  float tempC, humidity;
+  am2315.readTemperatureAndHumidity(tempC, humidity);
   delay(500);
   
   float tempF = farenheight(tempC);
@@ -110,6 +111,20 @@ void loop()
 void processInput()
 {
   
+}
+
+void displayError(const char* error)
+{
+  Serial.print("ERROR: ");
+  Serial.println(error);
+  
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("ERROR");
+  lcd.setCursor(0, 1);
+  lcd.print(error);
+  
+  while(1);
 }
 
 void printDisplay(const float temp, const float dewp, const float humidity, const float depr)
@@ -166,10 +181,10 @@ void printDisplayMode2(const float temp, const float dewp,  const float depr)
 {
   lcd.setCursor(0, 0);
   lcd.print("TEMP");
-  lcd.write((uint8_t)1);
+  //lcd.write((uint8_t)1);
   lcd.setCursor(6, 0);
   lcd.print("DEWP");
-  lcd.write((uint8_t)4);
+  //lcd.write((uint8_t)4);
   lcd.setCursor(12, 0);
   printMoneyDisplay(depr);
 
