@@ -64,17 +64,10 @@ byte customCharDnDn[8] = {
 
 void setup()
 {
-  Serial.begin(9600);
-  
-  lcd.createChar(0, customCharTorn);
-  lcd.createChar(1, customCharUpUp);
-  lcd.createChar(2, customCharUp);
-  lcd.createChar(3, customCharDn);
-  lcd.createChar(4, customCharDnDn);
-  lcd.begin(16, 2);
+  setupLCD();
 
   if (!am2315.begin()) {
-    displayError("AM2315 init");
+    handleError("AM2315 init");
   }
 
   lcd.clear();
@@ -86,10 +79,18 @@ void setup()
   delay(2000);
 }
 
+void setupLCD()
+{
+  lcd.createChar(0, customCharTorn);
+  lcd.createChar(1, customCharUpUp);
+  lcd.createChar(2, customCharUp);
+  lcd.createChar(3, customCharDn);
+  lcd.createChar(4, customCharDnDn);
+  lcd.begin(16, 2);
+}
+
 void loop()
 {
-  Serial.print(".");
-  
   float tempC, humidity;
   am2315.readTemperatureAndHumidity(tempC, humidity);
   delay(500);
@@ -113,11 +114,8 @@ void processInput()
   
 }
 
-void displayError(const char* error)
+void handleError(const char* error)
 {
-  Serial.print("ERROR: ");
-  Serial.println(error);
-  
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("ERROR");
